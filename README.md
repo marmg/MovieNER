@@ -4,6 +4,91 @@ Code for the *NER* test. Prepare data and extract entities from movie reviews an
 You can [try the demo web app](http://mmartgal.ddns.net:5000) with your own queries and reviews!
 
 
+### Data Insights
+
+The data is a collection of queries about movies. The problem consists on recgnize different entities in the queries, and comes labelled in the BIO format.
+
+The entities to be recongnized are the next ones:
+- `REVIEW`
+- `AWARD`
+- `DIRECTOR`
+- `RATING`
+- `RATINGS_AVERAGE`
+- `GENRE`
+- `CHARACTER`
+- `QUOTE`
+- `ORIGIN`
+- `SONG`
+- `ACTOR`
+- `TITLE`
+- `PLOT`
+- `RELATIONSHIP`
+- `YEAR`
+- `TRAILER` 
+
+There are some of them that are just some words (e.g. the `TRAILER`), but other are really complex such as `PLOT`, `QUOTE` or `REVIEWS`. This are some examples of `PLOT`:
+- Sample 1
+> did	O
+> dame	B-ACTOR
+> judy	I-ACTOR
+> dench	I-ACTOR
+> star	O
+> in	O
+> a	O
+> british	B-PLOT
+> film	O
+> about	O
+> queen	B-CHARACTER
+> elizabeth	I-CHARACTER
+- Sample 2
+> show	O
+> me	O
+> a	O
+> movie	O
+> about	O
+> cars	B-PLOT
+> that	I-PLOT
+> talk	I-PLOT
+
+As it can be seen it is really difficult to find a patter to recognize this entity. Thus, some labels are not going to be recognized to focus the effort in the other ones that are more interesting, like `ACTOR` or `TITLE`. The list of labels to be recognized is the next one:
+- `AWARD`
+- `DIRECTOR`
+- `RATING`
+- `RATINGS_AVERAGE`
+- `GENRE`
+- `CHARACTER`
+- `SONG`
+- `ACTOR`
+- `TITLE`
+- `YEAR`
+- `TRAILER` 
+
+##### Errors and mismatches
+
+The data contains also some errors and mismatches. For instance take a look into the next sample, in which *harry potter* appears labelles as `TITLE`, but in fact it is a `CHARACTER`. Or in the same sample, the word soundtrack that it is mispelled.
+> can	O
+> you	O
+> get	O
+> a	O
+> soundtrac	B-SONG
+> for	O
+> the	O
+> harry	B-TITLE
+> potter	I-TITLE
+> films	I-TITLE
+
+Or in this samples, in which the word *directed* appears labelled as `DIRECTOR` when it is not.
+> who	O
+> directed	B-DIRECTOR
+> the	O
+> film	O
+> pulp	B-TITLE
+> fiction	I-TITLE
+> that	O
+> starred	O
+> john	B-ACTOR
+> travolta	I-ACTOR
+
 
 ### The Approach
 
@@ -40,12 +125,12 @@ The entities of both files ([engtrain.bio](engtrain.bio) and [trivia10k13train.b
 
 ### Metrics
 
-The metrics are the next ones:
+The metrics (weighted) with all labels are the next ones:
 
 ##### engtest.bio
-- Precission: 
-- Recall:
-- F1-Score:
+- Precission: 0.72
+- Recall: 0.72
+- F1-Score: 0.68
 
 Confussion Matrix:
 ![](images/matriz-eng.png?raw=true)
@@ -58,4 +143,24 @@ Confussion Matrix:
 
 Confussion Matrix:
 ![](images/matriz-trivia.png?raw=true)
+
+
+On the other hand, the metrics (weighted) with just the labels that are being recognized are the next ones:
+
+##### engtest.bio
+- Precission: 0.79
+- Recall: 0.76
+- F1-Score: 0.74
+
+Confussion Matrix:
+![](images/matriz-englabels.png?raw=true)
+
+
+##### trivia10k13test.bio
+- Precission: 
+- Recall: 
+- F1-Score: 
+
+Confussion Matrix:
+![](images/matriz-trivialabels.png?raw=true)
 
