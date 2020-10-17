@@ -29,27 +29,45 @@ The entities to be recongnized are the next ones:
 There are some of them that are just some words (e.g. the `TRAILER`), but other are really complex such as `PLOT`, `QUOTE` or `REVIEWS`. This are some examples of `PLOT`:
 - Sample 1
 > did	O
+> 
 > dame	B-ACTOR
+> 
 > judy	I-ACTOR
+> 
 > dench	I-ACTOR
+> 
 > star	O
+> 
 > in	O
+> 
 > a	O
+> 
 > british	B-PLOT
+> 
 > film	O
+> 
 > about	O
+> 
 > queen	B-CHARACTER
+> 
 > elizabeth	I-CHARACTER
+> 
 - Sample 2
 > show	O
+> 
 > me	O
+> 
 > a	O
+> 
 > movie	O
+> 
 > about	O
+> 
 > cars	B-PLOT
+> 
 > that	I-PLOT
+> 
 > talk	I-PLOT
-
 As it can be seen it is really difficult to find a patter to recognize this entity. Thus, some labels are not going to be recognized to focus the effort in the other ones that are more interesting, like `ACTOR` or `TITLE`. The list of labels to be recognized is the next one:
 - `AWARD`
 - `DIRECTOR`
@@ -67,26 +85,44 @@ As it can be seen it is really difficult to find a patter to recognize this enti
 
 The data contains also some errors and mismatches. For instance take a look into the next sample, in which *harry potter* appears labelles as `TITLE`, but in fact it is a `CHARACTER`. Or in the same sample, the word soundtrack that it is mispelled.
 > can	O
+> 
 > you	O
+> 
 > get	O
+> 
 > a	O
+> 
 > soundtrac	B-SONG
+> 
 > for	O
+> 
 > the	O
+> 
 > harry	B-TITLE
+> 
 > potter	I-TITLE
+> 
 > films	I-TITLE
 
 Or in this samples, in which the word *directed* appears labelled as `DIRECTOR` when it is not.
 > who	O
+> 
 > directed	B-DIRECTOR
+> 
 > the	O
+> 
 > film	O
+> 
 > pulp	B-TITLE
+> 
 > fiction	I-TITLE
+> 
 > that	O
+> 
 > starred	O
+> 
 > john	B-ACTOR
+> 
 > travolta	I-ACTOR
 
 
