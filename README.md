@@ -189,7 +189,7 @@ On the other hand, the metrics (weighted) with just the labels that are being re
 - F1-Score: 0.74
 
 Confussion Matrix:
-![](images/matriz-englabels.png?raw=true)
+![](images/matriz-eng-labels.png?raw=true)
 
 
 ##### trivia10k13test.bio
