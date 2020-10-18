@@ -201,9 +201,9 @@ Confussion Matrix:
 
 
 ##### trivia10k13test.bio
-- Precission: 
-- Recall:
-- F1-Score:
+- Precission: 0.27
+- Recall: 0.43
+- F1-Score: 0.31
 
 Confussion Matrix:
 
@@ -223,13 +223,13 @@ Confussion Matrix:
 
 
 ##### trivia10k13test.bio
-- Precission: 
-- Recall: 
-- F1-Score: 
+- Precission: 0.93
+- Recall: 0.86
+- F1-Score: 0.89
 
 Confussion Matrix:
 
-![Confussion Matrix](images/matriz-trivialabels.png?raw=true)
+![Confussion Matrix](images/matriz-trivia-labels.png?raw=true)
 
 ### Web APP
 
