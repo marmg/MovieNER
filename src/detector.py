@@ -1,8 +1,9 @@
+# Imports
 import spacy
 import pandas as pd
 
-from src.albert import AlbertNER, AlbertQA
-from src.logging_handler import init_logger, logger
+from .albert import AlbertNER, AlbertQA
+from .logging_handler import init_logger, logger
 
 import logging
 import string
@@ -17,24 +18,24 @@ logger = init_logger()
 logger.setLevel(logging.ERROR)
 
 # NER Models
-model = spacy.load("en_core_web_sm")
+model = spacy.load("en_core_web_lg")
 ner = AlbertNER()
-ner.load("assets/models/conll03")
+ner.load("/home/marcos/Projects/kpmgtest/assets/models/conll03")
 
 # QA Model to disambiguate
 qa = AlbertQA()
-qa.load("assets/models/squad")
+qa.load("/home/marcos/Projects/kpmgtest/assets/models/squad")
 
 # List of genres, actor, directors and titles
-with open("assets/genres.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/genres.list", "r") as f:
     genres = f.read().split("\n")    
-with open("assets/titles.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/titles.list", "r") as f:
     titles = f.read().split("\n")
-with open("assets/actors.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/actors.list", "r") as f:
     actors = f.read().split("\n")
-with open("assets/directors.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/directors.list", "r") as f:
     directors = f.read().split("\n")
-
+    
 # Regex
 rates_l = [
    "g",
@@ -152,8 +153,9 @@ pat_director = "(?:directed|director|directed by)"
 pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
 
 
+# Check data with movie database
 cols = ["original_title", "year", "genre", "director", "actors", "description"]
-df_movies = pd.read_csv("assets/movies.csv")
+df_movies = pd.read_csv("/home/marcos/Projects/kpmgtest/assets/movies.csv")
 df_movies = df_movies.loc[df_movies.actors.notna()]
 
 def check_data(actors, directors, years, titles, genres):
@@ -255,14 +257,14 @@ def get_titles(entities_albert):
 
 def get_titles_from_re(text):
     text_words = text.split()
-    if "film" in text:
+    if "film" in text_words:
         i = text_words.index("film")
         for j in reversed(range(4)):
             ent_tmp = " ".join(text_words[i+1:i+j+1])
             if ent_tmp in titles:
                 return [ent_tmp]
     
-    if "movie" in text:
+    if "movie" in text_words:
         i = text_words.index("movie")
         for j in reversed(range(5)):
             ent_tmp = " ".join(text_words[i:i+j])
@@ -270,7 +272,7 @@ def get_titles_from_re(text):
                 return [ent_tmp]
             
     return []
-
+            
 def get_titles_from_df(text, original_title):
     pat = fr"\b{original_title}\b"
     title = re.findall(pat, text, re.IGNORECASE)
@@ -313,8 +315,12 @@ def get_rate_avg(entities_spacy, text):
     real_ratings = []
     text_words = text.split()
     for rat in ratings_avg:
-        i = text_words.index(rat)
-        if text_words[i+1].strip(string.punctuation) == "stars" or "give" in text_words[i-5:i+5] or "/" in rat:
+        w = rat.split()[-1]
+        i = text_words.index(w)
+        if len(text_words) > i+1:
+            if text_words[i+1].strip(string.punctuation) == "stars":
+                real_ratings.append(rat + " " + "stars")
+        if "give" in text_words[i-5:i+5] or "/" in rat:
             real_ratings.append(rat)
     
     return real_ratings
@@ -340,7 +346,6 @@ def get_genres_from_df(text, genre):
     genres = re.findall(pat, text, re.IGNORECASE)
     
     return genres
-
 
 def get_year(text):
     dates = re.findall(pat_year, text, re.IGNORECASE)
@@ -388,7 +393,7 @@ def disambiguate_person(person, text):
     a_actor = qa.answer(q_actor, text, overwrite_cache=True)
     
     if a_actor:
-        if re.findall(pat_director, a_director, re.IGNORECASE):
+        if re.findall(pat_director, a_actor, re.IGNORECASE):
             return DIRECTOR
         else:
             return ACTOR
@@ -421,7 +426,7 @@ def get_directors_from_df(text, directors):
 def get_entities(text):
     doc = model(text)
     entities_spacy = [(ent.text, ent.label_) for ent in doc.ents]
-    entities_albert = ner.extract(text, overwrite_cache=True)
+    entities_albert = ner.extract(text, device='cuda', overwrite_cache=True)
     
     return entities_spacy, entities_albert
 
@@ -436,16 +441,22 @@ def parse_entity(text, label):
 
 def merge_entities(entities, new_entities):
     for ent in new_entities:
-        ent_tmp = (ent[0], "O")
+        ent_tmp = (ent[0].strip().strip(string.punctuation), "O")
         if ent_tmp in entities:
-            entities[entities.index(ent_tmp)] = ent
+            idxs = [i for i, x in enumerate(entities) if x == ent_tmp]
+            for i in idxs:
+                if ent[1].startswith("I"):
+                    if i != 0 and (entities[i-1][1] == ent[1].replace("I-", "B-") or entities[i-1][1] == ent[1]):
+                        entities[i] = ent
+                else:
+                    entities[i] = ent
 
     return entities
 
 
 def extract(text):
     words = text.split(" ")
-    entities = [(w.strip(string.punctuation), "O") for w in words]
+    entities = [(w.strip().strip(string.punctuation), "O") for w in words]
     
     entities_spacy, entities_albert = get_entities(text)
     
@@ -453,7 +464,6 @@ def extract(text):
     actors = []
     directors = []
     characters = []
-    amiguous = []
     for person in persons:
         actor_tmp = is_actor(person)
         director_tmp = is_director(person)
@@ -493,42 +503,43 @@ def extract(text):
     new_entities = []
     titles_parsed = []
     for title in titles:
-        titles_parsed += parse_entity(title, "TITLE")
+        titles_parsed += parse_entity(title.strip(), "TITLE")
     years_parsed = []
     for year in years:
-        years_parsed += parse_entity(year, "YEAR")
+        years_parsed += parse_entity(year.strip(), "YEAR")
     ratings_avg_parsed = []
     for rating_average in rate_avg:
-        ratings_avg_parsed += parse_entity(rating_average, "RATINGS_AVERAGE")
-    songs_parsed = []
-    for song in songs:
-        songs_parsed += parse_entity(song, "SONG")
+        ratings_avg_parsed += parse_entity(rating_average.strip(), "RATINGS_AVERAGE")
     awards_parsed = []
     for award in awards:
-        awards_parsed += parse_entity(award, "AWARD")
+        awards_parsed += parse_entity(award.strip(), "AWARD")
+    songs_parsed = []
+    for song in songs:
+        songs_parsed += parse_entity(song.strip(), "SONG")
     trailers_parsed = []
     for trailer in trailers:
-        trailers_parsed += parse_entity(trailer, "TRAILER")
+        trailers_parsed += parse_entity(trailer.strip(), "TRAILER")
     rate_parsed = []
     for rating in rate:
-        rate_parsed += parse_entity(rating, "RATING")
+        rate_parsed += parse_entity(rating.strip(), "RATING")
     genres_parsed = []
     for genre in genres:
-        genres_parsed += parse_entity(genre, "GENRE")
+        genres_parsed += parse_entity(genre.strip(), "GENRE")
     actors_parsed = []
     for actor in actors:
-        actors_parsed += parse_entity(actor, "ACTOR")
+        actors_parsed += parse_entity(actor.strip(), "ACTOR")
     directors_parsed = []
     for director in directors:
-        directors_parsed += parse_entity(director, "DIRECTOR")
+        directors_parsed += parse_entity(director.strip(), "DIRECTOR")
     characters_parsed = []
     for character in characters:
-        characters_parsed += parse_entity(character, "CHARACTER")
-
+        characters_parsed += parse_entity(character.strip(), "CHARACTER")
+    
+    
     new_entities = titles_parsed + years_parsed + ratings_avg_parsed + trailers_parsed + rate_parsed + genres_parsed + directors_parsed + actors_parsed + characters_parsed + songs_parsed + awards_parsed
     entities = merge_entities(entities, new_entities)
-    
-    if 1 <= len(df) < 3:
+                      
+    if len(df) == 1:
         return entities, df
     else:    
         return entities, None

@@ -219,7 +219,7 @@ class AlbertQA:
             # Make sure only the first process in distributed training process the dataset, and the others will use the cache
             torch.distributed.barrier()
 
-        if evaluate:
+        if evaluate and os.path.exists(cached_features_file):
             os.remove(cached_features_file)
 
         if output_examples:
