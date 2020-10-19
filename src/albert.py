@@ -33,7 +33,6 @@ from transformers.data.processors.squad import SquadResult, SquadV2Processor
 
 from .utils_ner import convert_examples_to_features, read_examples_from_file, get_labels, parse_result
 from .config import *
-from .metrics import ner_f1_score, ner_precision_score, ner_recall_score
 from .logging_handler import logger
 
 
@@ -562,9 +561,9 @@ class AlbertNER:
 
         results = {
             "loss": eval_loss,
-            "precision": ner_precision_score(out_label_list, preds_list),
-            "recall": ner_recall_score(out_label_list, preds_list),
-            "f1": ner_f1_score(out_label_list, preds_list),
+            "precision": "",
+            "recall": "",
+            "f1": "",
         }
 
         logger.info("***** Eval results %s *****", prefix)

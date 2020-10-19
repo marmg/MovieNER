@@ -20,20 +20,20 @@ logger.setLevel(logging.ERROR)
 # NER Models
 model = spacy.load("en_core_web_lg")
 ner = AlbertNER()
-ner.load("/home/marcos/Projects/kpmgtest/assets/models/conll03")
+ner.load("assets/models/conll03")
 
 # QA Model to disambiguate
 qa = AlbertQA()
-qa.load("/home/marcos/Projects/kpmgtest/assets/models/squad")
+qa.load("assets/models/squad")
 
 # List of genres, actor, directors and titles
-with open("/home/marcos/Projects/kpmgtest/assets/genres.list", "r") as f:
+with open("assets/genres.list", "r") as f:
     genres = f.read().split("\n")    
-with open("/home/marcos/Projects/kpmgtest/assets/titles.list", "r") as f:
+with open("assets/titles.list", "r") as f:
     titles = f.read().split("\n")
-with open("/home/marcos/Projects/kpmgtest/assets/actors.list", "r") as f:
+with open("assets/actors.list", "r") as f:
     actors = f.read().split("\n")
-with open("/home/marcos/Projects/kpmgtest/assets/directors.list", "r") as f:
+with open("assets/directors.list", "r") as f:
     directors = f.read().split("\n")
     
 # Regex
@@ -155,7 +155,7 @@ pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
 
 # Check data with movie database
 cols = ["original_title", "year", "genre", "director", "actors", "description"]
-df_movies = pd.read_csv("/home/marcos/Projects/kpmgtest/assets/movies.csv")
+df_movies = pd.read_csv("assets/movies.csv")
 df_movies = df_movies.loc[df_movies.actors.notna()]
 
 def check_data(actors, directors, years, titles, genres):
@@ -426,7 +426,7 @@ def get_directors_from_df(text, directors):
 def get_entities(text):
     doc = model(text)
     entities_spacy = [(ent.text, ent.label_) for ent in doc.ents]
-    entities_albert = ner.extract(text, device='cuda', overwrite_cache=True)
+    entities_albert = ner.extract(text, overwrite_cache=True)
     
     return entities_spacy, entities_albert
 
