@@ -20,20 +20,20 @@ logger.setLevel(logging.ERROR)
 # NER Models
 model = spacy.load("en_core_web_lg")
 ner = AlbertNER()
-ner.load("assets/models/conll03")
+ner.load("/home/marcos/Projects/kpmgtest/assets/models/conll03")
 
 # QA Model to disambiguate
 qa = AlbertQA()
-qa.load("assets/models/squad")
+qa.load("/home/marcos/Projects/kpmgtest/assets/models/squad")
 
 # List of genres, actor, directors and titles
-with open("assets/genres.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/genres.list", "r") as f:
     genres = f.read().split("\n")    
-with open("assets/titles.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/titles.list", "r") as f:
     titles = f.read().split("\n")
-with open("assets/actors.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/actors.list", "r") as f:
     actors = f.read().split("\n")
-with open("assets/directors.list", "r") as f:
+with open("/home/marcos/Projects/kpmgtest/assets/directors.list", "r") as f:
     directors = f.read().split("\n")
     
 # Regex
@@ -155,7 +155,7 @@ pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
 
 # Check data with movie database
 cols = ["original_title", "year", "genre", "director", "actors", "description"]
-df_movies = pd.read_csv("assets/movies.csv")
+df_movies = pd.read_csv("/home/marcos/Projects/kpmgtest/assets/movies.csv")
 df_movies = df_movies.loc[df_movies.actors.notna()]
 
 def check_data(actors, directors, years, titles, genres):
@@ -165,29 +165,43 @@ def check_data(actors, directors, years, titles, genres):
     
     df = df_movies.copy(deep=True)
     for actor in actors:
+        actor_original = actor
+        if "'" in actor:
+            actor = actor[:actor.index("'")]
+        if "`" in actor:
+            actor = actor[:actor.index("`")]
+        if "´" in actor:
+            actor = actor[:actor.index("´")]
         df_tmp = df.copy(deep=True)
         df = filter_by_actor(df, actor)
         if not len(df):
             df = filter_by_director(df_tmp, actor)
             if len(df):
-                new_directors.append(actor)
+                new_directors.append(actor_original)
             else:
                 df = df_tmp.copy(deep=True)
         else:
-            new_actors.append(actor)
+            new_actors.append(actor_original)
     
     for director in directors:
+        director_original = director
+        if "'" in director:
+            director = director[:director.index("'")]
+        if "`" in director:
+            director = director[:director.index("`")]
+        if "´" in director:
+            director = director[:director.index("´")]
         df_tmp = df.copy(deep=True)
         df = filter_by_director(df, director)
         if not len(df):
             df = filter_by_actor(df_tmp, director)
             if len(df):
-                new_actors.append(director)
+                new_actors.append(director_original)
             else:
                 print(f"Outlier: {director}")
                 df = df_tmp.copy(deep=True)
         else:
-            new_directors.append(director)
+            new_directors.append(director_original)
     
     new_years = []
     for year in years:
@@ -282,7 +296,9 @@ def get_titles_from_df(text, original_title):
 
 def get_songs(text, characters):
     songs = re.findall(pat_songs, text, re.IGNORECASE)
-    pat = fr"(?:{'|'.join(characters)}|)?\s?(?:{'|'.join(songs)})\s(?:by |of |from )?(?:{'|'.join(characters)}|)?"
+    if not songs:
+        return [], characters
+    pat = fr"(?:{'|'.join(characters)}|)?\s?(?:{'|'.join([s.strip() for s in songs])})\s(?:by |of |from )?(?:{'|'.join(characters)}|)?"
     songs = re.findall(pat, text, re.IGNORECASE)
     new_characters = []
     for character in characters:
@@ -347,6 +363,36 @@ def get_genres_from_df(text, genre):
     
     return genres
 
+def get_actors_from_df(text, actor):
+    actors = actor.split(",")
+    for i, person in enumerate(actors):
+        if "'" in person:
+            actors[i] = person[:person.index("'")]
+        if "`" in person:
+            actors[i] = person[:person.index("`")]
+        if "´" in person:
+            actors[i] = person[:person.index("´")]
+            
+    pat = fr"\b(?:{'|'.join(actors)})\b"
+    actors = re.findall(pat, text, re.IGNORECASE)
+    
+    return actors
+
+def get_directors_from_df(text, director):
+    directors = director.split(",")
+    for i, person in enumerate(directors):
+        if "'" in person:
+            directors[i] = person[:person.index("'")]
+        if "`" in person:
+            directors[i] = person[:person.index("`")]
+        if "´" in person:
+            directors[i] = person[:person.index("´")]
+            
+    pat = fr"\b(?:{'|'.join(directors)})\b"
+    directors = re.findall(pat, text, re.IGNORECASE)
+    
+    return directors
+
 def get_year(text):
     dates = re.findall(pat_year, text, re.IGNORECASE)
     dates = list(set([t for t in dates]))
@@ -372,25 +418,45 @@ def get_persons(entities_spacy, entities_albert):
             if p:
                 persons.append(p)
             p = ""
-
     persons = list(set([p.strip(string.punctuation) for p in persons]))
     
     return persons
 
 
 def is_actor(person):
+    if "'" in person:
+        person = person[:person.index("'")]
+    if "`" in person:
+        person = person[:person.index("`")]
+    if "´" in person:
+        person = person[:person.index("´")]
+    
     return person.lower() in actors
 
 
 def is_director(person):
+    if "'" in person:
+        person = person[:person.index("'")]
+    if "`" in person:
+        person = person[:person.index("`")]
+    if "´" in person:
+        person = person[:person.index("´")]
+        
     return person.lower() in directors
 
 
 def disambiguate_person(person, text):
+    if "'" in person:
+        person = person[:person.index("'")]
+    if "`" in person:
+        person = person[:person.index("`")]
+    if "´" in person:
+        person = person[:person.index("´")]
+        
     q_director = f"Is {person} a director?"
     q_actor = f"Is {person} an actor?"
 
-    a_actor = qa.answer(q_actor, text, overwrite_cache=True)
+    a_actor = qa.answer(q_actor, text,  device='cuda', overwrite_cache=True)
     
     if a_actor:
         if re.findall(pat_director, a_actor, re.IGNORECASE):
@@ -398,7 +464,7 @@ def disambiguate_person(person, text):
         else:
             return ACTOR
     else:
-        a_director = qa.answer(q_director, text, overwrite_cache=True)
+        a_director = qa.answer(q_director, text, device='cuda', overwrite_cache=True)
         if a_director:
             return DIRECTOR
         else:
@@ -426,7 +492,7 @@ def get_directors_from_df(text, directors):
 def get_entities(text):
     doc = model(text)
     entities_spacy = [(ent.text, ent.label_) for ent in doc.ents]
-    entities_albert = ner.extract(text, overwrite_cache=True)
+    entities_albert = ner.extract(text, device='cuda', overwrite_cache=True)
     
     return entities_spacy, entities_albert
 
@@ -435,7 +501,7 @@ def parse_entity(text, label):
     words = text.split(" ")
     entities = [(words[0], f"B-{label}")]
     entities += [(w, f"I-{label}") for w in words[1:]]
-
+    
     return entities
 
 
@@ -479,7 +545,7 @@ def extract(text):
                 directors.append(person)
             else:
                 actors.append(person)
-    
+                
     titles = get_titles(entities_albert) + get_titles_from_re(text)
     genres = get_genre(text)
     years = get_year(text)
@@ -497,8 +563,8 @@ def extract(text):
     if len(df) == 1:
         titles = get_titles_from_df(text, df.original_title.values[0])
         genre = get_genres_from_df(text, df.genre.values[0])
-        actors = list(set(actors+get_genres_from_df(text, df.actors.values[0])))
-        directors = get_genres_from_df(text, df.director.values[0])
+        actors = list(set(actors+get_actors_from_df(text, df.actors.values[0])))
+        directors = get_directors_from_df(text, df.director.values[0])
     
     new_entities = []
     titles_parsed = []
