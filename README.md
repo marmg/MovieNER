@@ -243,18 +243,6 @@ Confussion Matrix:
 
 ### Web APP
 
-Even when it was not required, an endpoint and a Web APP have been developed to test the approach. This was done because it is important to show the results in a beautiful way and to allow the user to try it.
-
-The code for the Web and for the Endpoint is not provided, and it is stored in a personal server. 
-
-It has 3 different areas. The first one is a form where the user has to introduce the text to analze, in this case movies reviews or queries about movies. There is one review stored to make it easier to try the demo.
+[Try the Web Demo!](http://mmartgal.ddns.net:5000/#/movies)
 
 ![Form](images/form.png?raw=True)
-
-The second one is the *NER* result. Labels found in the are shown here with different colors to recognize them. 
-
-![nerresult](images/nerresult.png?raw=True)
-
-The third and final one is the movie matched. If one movie has been matched with the entities recognized, some info about it is shown here. This will not always appear, because it has to match only one movie, and it has to be stored in the movie database. This will not work, for instance, with new movies that may be not stored.
-
-![moviematched](images/moviematched.png?raw=True)
