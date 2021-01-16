@@ -6,7 +6,9 @@ CONFIG_JSON_ID = "config"
 TOKENIZER_ID = "tokenizer"
 WEIGHTS_ID = "weights"
 
-albert_args = {
+label_list = ['B-LOC', 'B-MISC', 'B-ORG', 'B-PER', 'I-LOC', 'I-MISC', 'I-ORG', 'I-PER', 'O']
+
+albert_args_ner = {
     "data_dir": "",
     # "The input data dir. Should contain the training files for the CoNLL-2003 NER task."
     "model_type": "albert",
@@ -88,6 +90,8 @@ albert_args_squad = {
     "max_seq_length": 384,
     # "The maximum total input sequence length after tokenization. Sequences longer than this will be truncated, sequences shorter will be padded.",
     "doc_stride": 128,
+    # Return tensors of tokenizer
+    "return_tensors": 'pt',
     "do_lower_case": False,
     # When splitting up a long document into chunks, how much stride to take between chunks.
     "max_query_length": 64,

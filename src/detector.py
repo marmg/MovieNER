@@ -19,12 +19,10 @@ logger.setLevel(logging.ERROR)
 
 # NER Models
 model = spacy.load("en_core_web_lg")
-ner = AlbertNER()
-ner.load("assets/models/conll03")
+ner = AlbertNER("assets/models/conll03")
 
 # QA Model to disambiguate
-qa = AlbertQA()
-qa.load("assets/models/squad")
+qa = AlbertQA("assets/models/squad")
 
 # List of genres, actor, directors and titles
 with open("assets/genres.list", "r") as f:
@@ -456,7 +454,7 @@ def disambiguate_person(person, text):
     q_director = f"Is {person} a director?"
     q_actor = f"Is {person} an actor?"
 
-    a_actor = qa.answer(q_actor, text, overwrite_cache=True)
+    a_actor = qa.answer(q_actor, text)
     
     if a_actor:
         if re.findall(pat_director, a_actor, re.IGNORECASE):
@@ -464,7 +462,7 @@ def disambiguate_person(person, text):
         else:
             return ACTOR
     else:
-        a_director = qa.answer(q_director, text, overwrite_cache=True)
+        a_director = qa.answer(q_director, text)
         if a_director:
             return DIRECTOR
         else:
@@ -492,7 +490,7 @@ def get_directors_from_df(text, directors):
 def get_entities(text):
     doc = model(text)
     entities_spacy = [(ent.text, ent.label_) for ent in doc.ents]
-    entities_albert = ner.extract(text, overwrite_cache=True)
+    entities_albert = ner.extract(text)
     
     return entities_spacy, entities_albert
 
