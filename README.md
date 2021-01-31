@@ -1,7 +1,7 @@
 # NERTest
 Code for the *NER* test. Prepare data and extract entities from movie reviews and queries.
 
-You can [try the demo web app](http://mmartgal.ddns.net:5000) with your own queries and reviews!
+You can [try the demo web app](http://mmartgal.ddns.net:5000/#/demos/movies) with your own queries and reviews!
 
 
 ### Installation
