@@ -3,11 +3,13 @@ import spacy
 import pandas as pd
 
 from .albert import AlbertNER, AlbertQA
+from .endpoint_config import ASSETS_PATH, MODELS_PATH
 from .logging_handler import init_logger, logger
 
 import logging
 import string
 import re
+import os
 
 
 ACTOR = "actor"
@@ -19,19 +21,19 @@ logger.setLevel(logging.ERROR)
 
 # NER Models
 model = spacy.load("en_core_web_lg")
-ner = AlbertNER("assets/models/conll03")
+ner = AlbertNER(os.path.join(MODELS_PATH, "conll03"))
 
 # QA Model to disambiguate
-qa = AlbertQA("assets/models/squad")
+qa = AlbertQA(os.path.join(MODELS_PATH, "squad"))
 
 # List of genres, actor, directors and titles
-with open("assets/genres.list", "r") as f:
+with open(os.path.join(ASSETS_PATH, "genres.list"), "r") as f:
     genres = f.read().split("\n")    
-with open("assets/titles.list", "r") as f:
+with open(os.path.join(ASSETS_PATH, "titles.list"), "r") as f:
     titles = f.read().split("\n")
-with open("assets/actors.list", "r") as f:
+with open(os.path.join(ASSETS_PATH, "actors.list"), "r") as f:
     actors = f.read().split("\n")
-with open("assets/directors.list", "r") as f:
+with open(os.path.join(ASSETS_PATH, "directors.list"), "r") as f:
     directors = f.read().split("\n")
     
 # Regex
@@ -78,6 +80,7 @@ songs_l = [
    "songs",
    "bsos",
    "music",
+   "musical score",
    "track",
    "sound",
    "soundtrack",
@@ -153,7 +156,7 @@ pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
 
 # Check data with movie database
 cols = ["original_title", "year", "genre", "director", "actors", "description"]
-df_movies = pd.read_csv("assets/movies.csv")
+df_movies = pd.read_csv(os.path.join(ASSETS_PATH, "movies.csv"))
 df_movies = df_movies.loc[df_movies.actors.notna()]
 
 def check_data(actors, directors, years, titles, genres):
@@ -302,10 +305,14 @@ def get_songs(text, characters):
     for character in characters:
         add = True
         for song in songs:
-            if character in song:
+            text_idx_tmp = text.index(song)
+            text_tmp = text[text_idx_tmp-50:text_idx_tmp+len(song)+50]
+            if character in text_tmp and re.findall("(?:by |of |from )", text_tmp):
                 add = False
         if add:
             new_characters.append(character)
+        else:
+            songs.append(character)
     
     return songs, new_characters
 
@@ -555,7 +562,7 @@ def extract(text):
     
     actors, directors, years_, titles, genres_, df = check_data(actors, directors, years, titles, genres)
     
-    genres += genres_
+    genres = genres_
     years += years_
     
     if len(df) == 1:

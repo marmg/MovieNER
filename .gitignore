@@ -1,3 +1,7 @@
+logs/*
+endpoint.py
+src/endpoint_config.py
+
 # Test Notebook
 test.ipynb
 
