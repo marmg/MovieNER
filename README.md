@@ -186,7 +186,7 @@ The assets folder contains files used to extract entities, such as list of [acto
 
 As *Language Models* files are too large (for *Albert NER* and *Albert QA*), they can't be uploaded to GitHub and have to be downloaded from [the HuggingFace repository](https://huggingface.co/models?search=albert). Models trained with *Conll03* are the *NER* models, and the ones trained with *SQuADv2* are the *QA* models. Then, place the files inside *src/models/conll03* and *src/models/squad*, renaming the *pytorch_model.bin* files to *checkpoint.pt*. The use of different models will result in different performance, but anyone should work well. 
 
-You can also download the models used from [here](http://mmartgal.ddns.net:5000/models).
+You can also download the models used from [here](http://mmartgal.ddns.net/models).
 
 The data folder contains the data, raw and processed. See the [preprocessing notebook](notebooks/data_preprocessing.ipynb) to process the original data.
 
