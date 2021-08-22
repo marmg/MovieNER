@@ -16,9 +16,6 @@ ACTOR = "actor"
 DIRECTOR = "director"
 CHARACETR = "character"
 
-logger = init_logger()
-logger.setLevel(logging.ERROR)
-
 # NER Models
 model = spacy.load("en_core_web_lg")
 ner = AlbertNER(os.path.join(MODELS_PATH, "conll03"))
@@ -511,18 +508,42 @@ def parse_entity(text, label):
 
 
 def merge_entities(entities, new_entities):
+    original_words = list(enumerate([ent_[0].strip().strip(string.punctuation) for ent_ in entities]))
     for ent in new_entities:
-        ent_tmp = (ent[0].strip().strip(string.punctuation), "O")
-        if ent_tmp in entities:
-            idxs = [i for i, x in enumerate(entities) if x == ent_tmp]
-            for i in idxs:
-                if ent[1].startswith("I"):
-                    if i != 0 and (entities[i-1][1] == ent[1].replace("I-", "B-") or entities[i-1][1] == ent[1]):
-                        entities[i] = ent
-                else:
-                    entities[i] = ent
+        words = [x[0] for x in ent]
+        idxs = []
+        for i, word in original_words:
+            if word == words[0].strip().strip(string.punctuation):
+                val = True
+                for j in range(len(words)):
+                    if entities[i+j][0] != words[j].strip().strip(string.punctuation):
+                        val = False
+                        break
+                if val:
+                    idxs += list(zip(ent, range(i, i+len(words))))
+        for ent_, i in idxs:
+            if ent_[1].startswith("I"):
+                if i != 0 and (entities[i-1][1] == ent_[1].replace("I-", "B-") or entities[i-1][1] == ent_[1]):
+                    entities[i] = ent_
+            else:
+                entities[i] = ent_
 
     return entities
+
+
+# def merge_entities(entities, new_entities):
+#     for ent in new_entities:
+#         ent_tmp = (ent[0].strip().strip(string.punctuation), "O")
+#         if ent_tmp in entities:
+#             idxs = [i for i, x in enumerate(entities) if x == ent_tmp]
+#             for i in idxs:
+#                 if ent[1].startswith("I"):
+#                     if i != 0 and (entities[i-1][1] == ent[1].replace("I-", "B-") or entities[i-1][1] == ent[1]):
+#                         entities[i] = ent
+#                 else:
+#                     entities[i] = ent
+
+#     return entities
 
 
 def extract(text):
@@ -574,42 +595,41 @@ def extract(text):
     new_entities = []
     titles_parsed = []
     for title in titles:
-        titles_parsed += parse_entity(title.strip(), "TITLE")
+        titles_parsed.append(parse_entity(title.strip(), "TITLE"))
     years_parsed = []
     for year in years:
-        years_parsed += parse_entity(year.strip(), "YEAR")
+        years_parsed.append(parse_entity(year.strip(), "YEAR"))
     ratings_avg_parsed = []
     for rating_average in rate_avg:
-        ratings_avg_parsed += parse_entity(rating_average.strip(), "RATINGS_AVERAGE")
+        ratings_avg_parsed.append(parse_entity(rating_average.strip(), "RATINGS_AVERAGE"))
     awards_parsed = []
     for award in awards:
-        awards_parsed += parse_entity(award.strip(), "AWARD")
+        awards_parsed.append(parse_entity(award.strip(), "AWARD"))
     songs_parsed = []
     for song in songs:
-        songs_parsed += parse_entity(song.strip(), "SONG")
+        songs_parsed.append(parse_entity(song.strip(), "SONG"))
     trailers_parsed = []
     for trailer in trailers:
-        trailers_parsed += parse_entity(trailer.strip(), "TRAILER")
+        trailers_parsed.append(parse_entity(trailer.strip(), "TRAILER"))
     rate_parsed = []
     for rating in rate:
-        rate_parsed += parse_entity(rating.strip(), "RATING")
+        rate_parsed.append(parse_entity(rating.strip(), "RATING"))
     genres_parsed = []
     for genre in genres:
-        genres_parsed += parse_entity(genre.strip(), "GENRE")
+        genres_parsed.append(parse_entity(genre.strip(), "GENRE"))
     actors_parsed = []
     for actor in actors:
-        actors_parsed += parse_entity(actor.strip(), "ACTOR")
+        actors_parsed.append(parse_entity(actor.strip(), "ACTOR"))
     directors_parsed = []
     for director in directors:
-        directors_parsed += parse_entity(director.strip(), "DIRECTOR")
+        directors_parsed.append(parse_entity(director.strip(), "DIRECTOR"))
     characters_parsed = []
     for character in characters:
-        characters_parsed += parse_entity(character.strip(), "CHARACTER")
+        characters_parsed.append(parse_entity(character.strip(), "CHARACTER"))
     
     
     new_entities = titles_parsed + years_parsed + ratings_avg_parsed + trailers_parsed + rate_parsed + genres_parsed + directors_parsed + actors_parsed + characters_parsed + songs_parsed + awards_parsed
     entities = merge_entities(entities, new_entities)
-                      
     if len(df) == 1:
         return entities, df
     else:    
