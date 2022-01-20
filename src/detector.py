@@ -31,11 +31,10 @@ class Detector:
         self.ner = AlbertNER(os.path.join(MODELS_PATH, "conll03"))
 
         # Check data with movie database
-        cols = ["original_title", "year", "genre", "director", "actors", "description"]
         df_movies = pd.read_csv(os.path.join(ASSETS_PATH, "movies.csv"))
         df_movies = df_movies.loc[df_movies.actors.notna()]
         self.df_movies = df_movies
-        
+
         # Extractors
         self.award_extractor = AwardsExtractor(df_movies)
         self.genre_extractor = GenreExtractor(df_movies)

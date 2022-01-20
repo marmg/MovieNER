@@ -1,6 +1,10 @@
 import pandas as pd
 from src.filter import Filter
 
+
+cols = ["original_title", "year", "genre", "director", "actors", "description"]
+
+
 class Checker:
 	def __init__(self, filter: Filter, df: pd.DataFrame):
 		""" Init checker
