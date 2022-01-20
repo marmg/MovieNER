@@ -33,7 +33,7 @@ class Detector:
         self.df_movies = df_movies.loc[df_movies.actors.notna()]
 
         # Extractors
-        self.award_extractor = AwardExtractor(df_movies)
+        self.award_extractor = AwardsExtractor(df_movies)
         self.genre_extractor = GenreExtractor(df_movies)
         self.person_extractor = PersonExtractor(df_movies)
         self.rate_extractor = RateExtractor(df_movies)
@@ -149,7 +149,7 @@ class Detector:
             kwargs['genres'] = self.genre_extractor.get_genres_from_df(text, df.genre.values[0])
             kwargs['actors'] = list(set(actors+self.person_extractor.get_actors_from_df(text, df.actors.values[0])))
             kwargs['directors'] = self.person_extractor.get_directors_from_df(text, df.director.values[0])
-        
+
         new_entities = self.parse_entities(**kwargs)
         entities = self.merge_entities(entities, new_entities)
         if len(df) == 1:
