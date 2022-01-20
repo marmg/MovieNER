@@ -6,7 +6,13 @@ import logging
 logger = logging.getLogger()
 
 
-def init_logger(log_file=None, log_file_level=logging.NOTSET):
+def init_logger(log_file: str =None, log_file_level: int = logging.NOTSET):
+    """ Init logger
+
+    Keyword Arguments:
+        :param log_file: (str) File to log in. If None, only will log to console
+        :param log_file_level: (int) Level to log
+    """
     logging.disable(logging.WARNING)
     log_format = logging.Formatter("[%(asctime)s %(levelname)s] %(message)s")
     logger = logging.getLogger()

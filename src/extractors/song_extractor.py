@@ -1,4 +1,5 @@
 import re
+from typing import List, Tuple
 
 from src.extractors.base_extractor import BaseExtractor
 
@@ -35,7 +36,10 @@ pat_songs = fr"\b(?:{'|'.join(songs_l)})\b"
 
 
 class SongExtractor(BaseExtractor):
-    def get_songs(self, **kwargs):
+    """ Extract songs. """
+    def get_songs(self, **kwargs: dict) -> Tuple[List[str], List[str]]:
+        """ Get songs from text and update characters taking out the compositors.
+        Will take text and characters from kwargs and will return songs extracted and list of characters updated """
         characters = kwargs.get('characters', [])
         songs = re.findall(pat_songs, kwargs['text'], re.IGNORECASE)
         if not songs:
@@ -57,7 +61,8 @@ class SongExtractor(BaseExtractor):
 
         return songs, new_characters
 
-    def run(self, **kwargs):
+    def run(self, **kwargs: dict) -> dict:
+        """ Execute extractor. Will update kwargs with the songs extracted """
         songs, characters = self.get_songs(**kwargs)
         kwargs['songs'] = songs
         kwargs['characters'] = characters

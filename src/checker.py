@@ -1,9 +1,19 @@
+import pandas as pd
+from src.filter import Filter
+
 class Checker:
-	def __init__(self, filter, df):
+	def __init__(self, filter: Filter, df: pd.DataFrame):
+		""" Init checker
+
+		Keyword Arguments:
+			:param filter: Filter class to filter dataframe
+			:param df: Dataframe to filter
+		"""
 		self.filter = filter
 		self.df = df
 		
-	def run(self, **kwargs):
+	def run(self, **kwargs: dict) -> dict:
+		""" Execute checker and update actors, directors, years, titles, genres	 """
 		new_actors = []
 		new_directors = []
 		new_characters = []

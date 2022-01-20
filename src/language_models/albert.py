@@ -1,23 +1,26 @@
 import argparse
 import glob
-import logging
-import os
 import json
-import random
-import pickle as pkl
-
+import logging
 import numpy as np
+import os
+import pickle as pkl
+import random
 import torch
 from tqdm import tqdm, trange
 from transformers import AlbertConfig, AlbertForTokenClassification, AutoTokenizer, AlbertForQuestionAnswering
+from typing import List, Tuple
 
 from src.language_models.config import *
 from src.logging_handler import logger
 
 
 class AlbertQA:
+    """ Class to use Albert to answer questions.
+    TODO: Update model and checkpoints to work with last versions of transformers """
 
-    def __init__(self, path, device='cpu'):
+    def __init__(self, path: str, device: str = 'cpu'):
+        """ Init the QA Albert """
         if not os.path.exists(path):
             raise NotADirectoryError(
                 f"{os.path.abspath(path)} must be a directory containing the model files: config, tokenizer, weights.")
@@ -44,7 +47,14 @@ class AlbertQA:
             self.args['device'] = 'cuda'
             self.model.to('cuda')
 
-    def answer(self, question, context, **kwargs):
+    def answer(self, question: str, context: str, **kwargs: dict) -> str:
+        """ Look the answer to question in context
+
+        Keyword Arguments:
+             :param question: Question to answer
+             :param context: Context to look for the answer into
+             :return: Answer to question
+        """
         for key in kwargs:
             if key in self.args:
                 self.args[key] = kwargs[key]
@@ -68,8 +78,10 @@ class AlbertQA:
 
 
 class AlbertNER:
-    def __init__(self, path ,device='cpu'):
-        """ Method for pretrained model loading. """
+    """ Class to use Albert to extract named entities.
+    TODO: Update model and checkpoints to work with last versions of transformers """
+    def __init__(self, path: str ,device: str = 'cpu'):
+        """ Init the NER Albert """
         if not os.path.exists(path):
             raise NotADirectoryError(
                 f"{os.path.abspath(path)} must be a directory containing the model files: config, tokenizer, weights.")
@@ -97,7 +109,13 @@ class AlbertNER:
             self.model.to('cuda')
 
 
-    def extract(self, text, **kwargs):
+    def extract(self, text: str, **kwargs: dict) -> List[Tuple[str, str]]:
+        """ Extract named entities from text
+
+        Keyword Arguments:
+            :param text: Text to extract entities from
+            :return: List of named entities extacted
+        """
         for key in kwargs:
     	    if key in self.args:
                 self.args[key] = kwargs[key]

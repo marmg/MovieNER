@@ -1,5 +1,6 @@
 import re
 import string
+from typings import List
 
 from src.extractors.base_extractor import BaseExtractor
 
@@ -45,8 +46,9 @@ rates_l = [
 pat_rate = fr"\b(?:{'|'.join(rates_l)})\b(?:-rated| rated|)"
 
 class RateExtractor(BaseExtractor):
-			
-	def get_rate_avg(self, **kwargs):
+	""" Extract rates """
+	def get_rate_avg(self, **kwargs: dict) -> List[str]:
+        """ Get average rate """
 		ratings_avg = [ent[0] for ent in kwargs['entities_spacy'] if ent[1] == "CARDINAL"]
 		ratings_avg = list(set([t for t in ratings_avg]))
 		
@@ -63,12 +65,14 @@ class RateExtractor(BaseExtractor):
 		
 		return real_ratings
 
-	def get_rate(self, **kwargs):
+	def get_rate(self, **kwargs: dict) -> List[str]:
+        """ Get rates from text. Will take text from kwargs and will return the rates extracted """
 		rates = re.findall(pat_rate, kwargs['text'], re.IGNORECASE)
 		
 		return rates
 		
-	def run(self, **kwargs):
+	def run(self, **kwargs: dict) -> dict:
+        """ Execute extractor. Will update kwargs with the rates extracted """
 		kwargs['rate_avg'] = self.get_rate_avg(**kwargs)
 		kwargs['rate'] = self.get_rate(**kwargs)
 		return kwargs

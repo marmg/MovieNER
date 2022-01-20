@@ -1,5 +1,6 @@
 import re
 import os
+from typing import List
 
 from src.extractors.base_extractor import BaseExtractor
 from src.endpoint_config import ASSETS_PATH
@@ -8,8 +9,10 @@ with open(os.path.join(ASSETS_PATH, "titles.list"), "r") as f:
     TITLES = f.read().split("\n")
 
 
-class TitleExtractor(BaseExtractor):		
-	def get_titles(self, **kwargs):
+class TitleExtractor(BaseExtractor):
+	""" Extract titles """
+	def get_titles(self, **kwargs: dict) -> List[str]:
+		""" Get titles. Will take Albert entities from kwargs and will return titles extracted. """
 		titles_tmp = []
 		t = ""
 		for ent in kwargs['entities_albert']:
@@ -29,7 +32,8 @@ class TitleExtractor(BaseExtractor):
 		
 		return titles_tmp
 
-	def get_titles_from_re(self, **kwargs):
+	def get_titles_from_re(self, **kwargs: dict) -> List[str]:
+		""" Get titles. Will take text from kwargs and will return titles extracted. """
 		text_words = kwargs['text'].split()
 		if "film" in text_words:
 			i = text_words.index("film")
@@ -47,12 +51,20 @@ class TitleExtractor(BaseExtractor):
 				
 		return []
 				
-	def get_titles_from_df(self, text, original_title):
+	def get_titles_from_df(self, text: str, original_title: str) -> List[str]:
+		""" Get titles from df.
+
+		Keyword Arguments:
+			:param text: Text to extract titles from
+			:param original_title: Original title to look from in text
+			:return: Title found
+		"""
 		pat = fr"\b{original_title}\b"
 		title = re.findall(pat, text, re.IGNORECASE)
 		
 		return title
 		
-	def run(self, **kwargs):
+	def run(self, **kwargs: dict) -> dict:
+		""" Execute extractor. Will update kwargs with the titles extracted """
 		kwargs['titles'] =  self.get_titles(**kwargs) + self.get_titles_from_re(**kwargs)
 		return kwargs

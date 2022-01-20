@@ -27,7 +27,15 @@ pat_director = "(?:directed|director|directed by)"
 
 
 class PersonExtractor(BaseExtractor):
-	def get_persons(self, entities_spacy, entities_albert):
+	""" Extract actors, directors and characters. """
+	def get_persons(self, entities_spacy: List[Tuple[str, str]], entities_albert: List[Tuple[str, str]]):
+		""" Get persons from extracted entities from NER models.
+
+		Keyword Arguments:
+			:param entities_spacy: Named Entities extracted from spacy model
+			:param entities_albert: Named Entities extracted from Albert model
+			:return: List of persons extracted
+		"""
 		persons = []
 		for ent in entities_spacy:
 			if ent[1] == "PERSON":
@@ -49,7 +57,13 @@ class PersonExtractor(BaseExtractor):
 		
 		return persons
 
-	def is_actor(self, person):
+	def is_actor(self, person: str) -> bool:
+		""" Check if person is actor
+
+		Keyword Arguments:
+			:param person: Person to check if is actor
+			:return: True if person is actor
+		"""
 		if "'" in person:
 			person = person[:person.index("'")]
 		if "`" in person:
@@ -59,7 +73,13 @@ class PersonExtractor(BaseExtractor):
 		
 		return person.lower() in ACTORS
 
-	def is_director(self, person):
+	def is_director(self, person: str) -> bool:
+		""" Check if person is director
+
+		Keyword Arguments:
+			:param person: Person to check if is director
+			:return: True if person is director
+		"""
 		if "'" in person:
 			person = person[:person.index("'")]
 		if "`" in person:
@@ -69,7 +89,14 @@ class PersonExtractor(BaseExtractor):
 			
 		return person.lower() in DIRECTORS
 
-	def disambiguate_person(self, person, text):
+	def disambiguate_person(self, person: str, text: str) -> str:
+		""" Disambiguate if persos is actor or director in text
+
+		Keyword Arguments:
+			:param person: Person to disambiguate
+			:param text: Text
+			:return: actor | director
+		"""
 		if "'" in person:
 			person = person[:person.index("'")]
 		if "`" in person:
@@ -97,21 +124,36 @@ class PersonExtractor(BaseExtractor):
 				else:
 					return ACTOR
 
-	def get_actors_from_df(self, text, actors):
+	def get_actors_from_df(self, text: str, actors: str) -> List[str]:
+		""" Get directors from df.
+
+		Keyword Arguments:
+			:param text: Text to extract actors from
+			:param actors: List of actors to look for into text
+			:return: List of actors extracted
+		"""
 		actors = actors.split(",")
 		pat = fr"\b(?:{'|'.join([a.strip() for a in actors])})\b"
 		actors = re.findall(pat, text, re.IGNORECASE)
 		
 		return actors
 
-	def get_directors_from_df(self, text, directors):
+	def get_directors_from_df(self, text: str, directors: str) -> List[str]:
+		""" Get directors from df.
+
+		Keyword Arguments:
+			:param text: Text to extract directors from
+			:param directors: List of directors to look for into text
+			:return: List of directors extracted
+		"""
 		directors = directors.split(",")
 		pat = fr"\b(?:{'|'.join([d.strip() for d in directors])})\b"
 		directors = re.findall(pat, text, re.IGNORECASE)
 		
 		return directors
 		
-	def run(self, **kwargs):
+	def run(self, **kwargs: dict) -> dict:
+		""" Execute extractor. Will update kwargs with the actors, directors and characters extracted """
 		persons = self.get_persons(kwargs['entities_spacy'], kwargs['entities_albert'])
 		actors = []
 		directors = []
@@ -134,4 +176,5 @@ class PersonExtractor(BaseExtractor):
 		
 		kwargs['actors'] = actors
 		kwargs['directors'] = directors
+		kwargs['characters'] = characters
 		return kwargs
