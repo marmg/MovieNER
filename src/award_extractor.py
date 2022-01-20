@@ -1,0 +1,52 @@
+import re
+
+
+awards_l = [
+    "oscars",
+    "sag",
+    "sag award",
+    "sag awards",
+    "award",
+    "awards",
+    "Best Feature Film",
+    "Best Actor",
+    "Best Short Film",
+    "Best British Short Film",
+    "Special Jury Prize for Short Film",
+    "Best Feature Documentary",
+    "Best Student Film",
+    "Best Music Video",
+    "Best Short Documentary",
+    "Best Animation",
+    "Best First Film",
+    "Best Picture",
+    "Top Ten Films",
+    "Best Director",
+    "Best Actor",
+    "Best Actress",
+    "Best Supporting Actor",
+    "Best Supporting Actress",
+    "Best Ensemble Cast",
+    "Best Original Screenplay",
+    "Best Adapted Screenplay",
+    "Best Cinematography",
+    "Best Production Design",
+    "Best Editing",
+    "Best Original Score",
+    "Best Visual Effects"
+    "academy"
+]
+
+pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
+
+
+class AwardsExtractor(BaseExtractor):
+	def get_awards(self):
+		awards = re.findall(pat_awards, self.text, re.IGNORECASE)
+		
+		return awards
+
+	def run(self, **kwargs):
+		kwargs['awards'] = self.get_awards()
+		
+		return kwargs
