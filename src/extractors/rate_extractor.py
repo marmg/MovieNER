@@ -1,6 +1,6 @@
 import re
 import string
-from typings import List
+from typing import List
 
 from src.extractors.base_extractor import BaseExtractor
 
