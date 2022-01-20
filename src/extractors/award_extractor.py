@@ -1,4 +1,5 @@
 import re
+from typings import List
 
 from src.extractors.base_extractor import BaseExtractor
 
