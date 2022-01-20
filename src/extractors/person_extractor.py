@@ -5,7 +5,7 @@ from src.extractors.base_extractor import BaseExtractor
 import string
 import re
 import os
-from typings import List, Tuple
+from typing import List, Tuple
 
 ACTOR = "actor"
 DIRECTOR = "director"
