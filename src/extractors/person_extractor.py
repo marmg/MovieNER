@@ -69,7 +69,7 @@ class PersonExtractor(BaseExtractor):
 			
 		return person.lower() in DIRECTORS
 
-	def disambiguate_person(self, person):
+	def disambiguate_person(self, person, text):
 		if "'" in person:
 			person = person[:person.index("'")]
 		if "`" in person:
@@ -80,7 +80,7 @@ class PersonExtractor(BaseExtractor):
 		q_director = f"Is {person} a director?"
 		q_actor = f"Is {person} an actor?"
 
-		a_actor = qa.answer(q_actor, self.text)
+		a_actor = qa.answer(q_actor, text)
 		
 		if a_actor:
 			if re.findall(pat_director, a_actor, re.IGNORECASE):
@@ -88,7 +88,7 @@ class PersonExtractor(BaseExtractor):
 			else:
 				return ACTOR
 		else:
-			a_director = qa.answer(q_director, self.text)
+			a_director = qa.answer(q_director, text)
 			if a_director:
 				return DIRECTOR
 			else:
