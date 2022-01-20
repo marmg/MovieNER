@@ -2,6 +2,7 @@ import re
 
 from src.extractors.base_extractor import BaseExtractor
 
+pat_year = "(?:since|before|after|)(?:1[8-9]{1}[0-9]{2}|2[0-9]{3})'?s?"
 
 class YearExtractor(BaseExtractor):
 	def get_year(self, **kwargs):
