@@ -1,12 +1,17 @@
 import re
+import os
 
 from src.extractors.base_extractor import BaseExtractor
+from src.endpoint_config import ASSETS_PATH
+
+with open(os.path.join(ASSETS_PATH, "genres.list"), "r") as f:
+    GENRES = f.read().split("\n")
 
 
 class GenreExtractor(BaseExtractor):
 	def get_genre(self, **kwargs):
 		genres_tmp = []
-		for genre in genres:
+		for genre in GENRES:
 			if genre in kwargs['text']:
 				genres_tmp.append(genre)
 		

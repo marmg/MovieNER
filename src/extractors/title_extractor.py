@@ -1,6 +1,11 @@
 import re
+import os
 
 from src.extractors.base_extractor import BaseExtractor
+from src.endpoint_config import ASSETS_PATH
+
+with open(os.path.join(ASSETS_PATH, "titles.list"), "r") as f:
+    TITLES = f.read().split("\n")
 
 
 class TitleExtractor(BaseExtractor):		
@@ -20,7 +25,7 @@ class TitleExtractor(BaseExtractor):
 				t = ""
 
 		titles_tmp = list(set([t for t in titles_tmp]))
-		titles_tmp = [t for t in titles_tmp if t.lower() in titles]
+		titles_tmp = [t for t in titles_tmp if t.lower() in TITLES]
 		
 		return titles_tmp
 
@@ -30,14 +35,14 @@ class TitleExtractor(BaseExtractor):
 			i = text_words.index("film")
 			for j in reversed(range(4)):
 				ent_tmp = " ".join(text_words[i+1:i+j+1])
-				if ent_tmp in titles:
+				if ent_tmp in TITLES:
 					return [ent_tmp]
 		
 		if "movie" in text_words:
 			i = text_words.index("movie")
 			for j in reversed(range(5)):
 				ent_tmp = " ".join(text_words[i:i+j])
-				if ent_tmp in titles:
+				if ent_tmp in TITLES:
 					return [ent_tmp]
 				
 		return []
