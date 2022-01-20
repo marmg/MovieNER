@@ -173,7 +173,7 @@ class Detector:
         if len(df) == 1:
             kwargs['titles'] = self.title_extractor.get_titles_from_df(text, df.original_title.values[0])
             kwargs['genres'] = self.genre_extractor.get_genres_from_df(text, df.genre.values[0])
-            kwargs['actors'] = list(set(actors + self.person_extractor.get_actors_from_df(text, df.actors.values[0])))
+            kwargs['actors'] = list(set(kwargs['actors'] + self.person_extractor.get_actors_from_df(text, df.actors.values[0])))
             kwargs['directors'] = self.person_extractor.get_directors_from_df(text, df.director.values[0])
 
         new_entities = self.parse_entities(**kwargs)
