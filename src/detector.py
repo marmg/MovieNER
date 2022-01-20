@@ -56,7 +56,7 @@ class Detector:
         ]
 
         # Filter
-        self.filter = Filter(df_movies)
+        self.filter = Filter()
         # Checker
         self.checker = Checker(self.filter, df_movies)
 
