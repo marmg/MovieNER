@@ -2,7 +2,6 @@ import re
 
 from src.extractors.base_extractor import BaseExtractor
 
-
 awards_l = [
     "oscars",
     "sag",
@@ -44,14 +43,15 @@ pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
 
 class AwardsExtractor(BaseExtractor):
     """ Extract Awards """
-	def get_awards(self, **kwargs: dict) -> List[str]:
-        """ Get Awards from text. Will take text from kwargs """
-		awards = re.findall(pat_awards, kwargs['text'], re.IGNORECASE)
-		
-		return awards
 
-	def run(self, **kwargs: dict) -> dict:
+    def get_awards(self, **kwargs: dict) -> List[str]:
+        """ Get Awards from text. Will take text from kwargs """
+        awards = re.findall(pat_awards, kwargs['text'], re.IGNORECASE)
+
+        return awards
+
+    def run(self, **kwargs: dict) -> dict:
         """ Execute extractor. Will update kwargs with the awards extracted """
-		kwargs['awards'] = self.get_awards(**kwargs)
-		
-		return kwargs
+        kwargs['awards'] = self.get_awards(**kwargs)
+
+        return kwargs
