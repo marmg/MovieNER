@@ -1,5 +1,3 @@
-
-
 class Checker:
 	def __init__(self, filter, df):
 		self.filter = filter

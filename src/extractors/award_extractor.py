@@ -41,12 +41,12 @@ pat_awards = fr"\b(?:{'|'.join(awards_l)})\b"
 
 
 class AwardsExtractor(BaseExtractor):
-	def get_awards(self):
-		awards = re.findall(pat_awards, self.text, re.IGNORECASE)
+	def get_awards(self, **kwargs):
+		awards = re.findall(pat_awards, kwargs['text'], re.IGNORECASE)
 		
 		return awards
 
 	def run(self, **kwargs):
-		kwargs['awards'] = self.get_awards()
+		kwargs['awards'] = self.get_awards(**kwargs)
 		
 		return kwargs

@@ -44,12 +44,12 @@ pat_rate = fr"\b(?:{'|'.join(rates_l)})\b(?:-rated| rated|)"
 
 class RateExtractor(BaseExtractor):
 			
-	def get_rate_avg(self, entities_spacy):
-		ratings_avg = [ent[0] for ent in entities_spacy if ent[1] == "CARDINAL"]
+	def get_rate_avg(self, **kwargs):
+		ratings_avg = [ent[0] for ent in kwargs['entities_spacy'] if ent[1] == "CARDINAL"]
 		ratings_avg = list(set([t for t in ratings_avg]))
 		
 		real_ratings = []
-		text_words = self.text.split()
+		text_words = kwargs['text'].split()
 		for rat in ratings_avg:
 			w = rat.split()[-1]
 			i = text_words.index(w)
@@ -61,12 +61,12 @@ class RateExtractor(BaseExtractor):
 		
 		return real_ratings
 
-	def get_rate(self):
-		rates = re.findall(pat_rate, self.text, re.IGNORECASE)
+	def get_rate(self, **kwargs):
+		rates = re.findall(pat_rate, kwargs['text'], re.IGNORECASE)
 		
 		return rates
 		
 	def run(self, **kwargs):
-		kwargs['rate_avg'] = self.get_rate_avg(kwargs['entities_spacy'])
-		kwargs['rate'] = self.get_rate()
+		kwargs['rate_avg'] = self.get_rate_avg(**kwargs)
+		kwargs['rate'] = self.get_rate(**kwargs)
 		return kwargs

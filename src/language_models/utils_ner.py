@@ -1,6 +1,6 @@
 import os
 
-from .logging_handler import logger
+from src.logging_handler import logger
 
 
 class InputExample(object):

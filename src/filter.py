@@ -1,7 +1,6 @@
 class Filter:
-	def __init__(self, df, text):
+	def __init__(self, df):
 		self.df = df
-		self.text = text
 		
 	def filter_by_director(self, director):
 		return self.df.loc[self.df.director.str.lower() == director.lower()]

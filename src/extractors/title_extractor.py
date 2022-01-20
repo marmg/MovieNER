@@ -2,10 +2,10 @@ import re
 
 
 class TitleExtractor(BaseExtractor):		
-	def get_titles(self, entities_albert):
+	def get_titles(self, **kwargs):
 		titles_tmp = []
 		t = ""
-		for ent in entities_albert:
+		for ent in kwargs['entities_albert']:
 			if ent[1] == "B-MISC":
 				if t:
 					titles_tmp.append(t)
@@ -22,8 +22,8 @@ class TitleExtractor(BaseExtractor):
 		
 		return titles_tmp
 
-	def get_titles_from_re(self):
-		text_words = self.text.split()
+	def get_titles_from_re(self, **kwargs):
+		text_words = kwargs['text'].split()
 		if "film" in text_words:
 			i = text_words.index("film")
 			for j in reversed(range(4)):
@@ -40,12 +40,12 @@ class TitleExtractor(BaseExtractor):
 				
 		return []
 				
-	def get_titles_from_df(self, original_title):
+	def get_titles_from_df(self, text, original_title):
 		pat = fr"\b{original_title}\b"
-		title = re.findall(pat, self.text, re.IGNORECASE)
+		title = re.findall(pat, text, re.IGNORECASE)
 		
 		return title
 		
 	def run(self, **kwargs):
-		kwargs['titles'] =  self.get_titles() + self.get_titles_from_re()
+		kwargs['titles'] =  self.get_titles(**kwargs) + self.get_titles_from_re(**kwargs)
 		return kwargs

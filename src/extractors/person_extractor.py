@@ -1,4 +1,4 @@
-from .albert import AlbertQA
+from src.language_models import AlbertQA
 from .endpoint_config import ASSETS_PATH, MODELS_PATH
 
 import string
@@ -96,17 +96,17 @@ class PersonExtractor(BaseExtractor):
 				else:
 					return ACTOR
 
-	def get_actors_from_df(self, actors):
+	def get_actors_from_df(self, text, actors):
 		actors = actors.split(",")
 		pat = fr"\b(?:{'|'.join([a.strip() for a in actors])})\b"
-		actors = re.findall(pat, self.text, re.IGNORECASE)
+		actors = re.findall(pat, text, re.IGNORECASE)
 		
 		return actors
 
-	def get_directors_from_df(self, directors):
+	def get_directors_from_df(self, text, directors):
 		directors = directors.split(",")
 		pat = fr"\b(?:{'|'.join([d.strip() for d in directors])})\b"
-		directors = re.findall(pat, self.text, re.IGNORECASE)
+		directors = re.findall(pat, text, re.IGNORECASE)
 		
 		return directors
 		
@@ -125,7 +125,7 @@ class PersonExtractor(BaseExtractor):
 			elif not actor_tmp and not director_tmp:
 				characters.append(person)
 			else:
-				amb = self.disambiguate_person(person, text)
+				amb = self.disambiguate_person(person, kwargs['text'])
 				if amb == DIRECTOR:
 					directors.append(person)
 				else:

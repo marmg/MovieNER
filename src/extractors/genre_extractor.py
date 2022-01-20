@@ -2,21 +2,21 @@ import re
 
 
 class GenreExtractor(BaseExtractor):
-	def get_genre(self):
+	def get_genre(self, **kwargs):
 		genres_tmp = []
 		for genre in genres:
-			if genre in self.text:
+			if genre in kwargs['text']:
 				genres_tmp.append(genre)
 		
 		return genres_tmp
 
-	def get_genres_from_df(self, genre):
+	def get_genres_from_df(self, text, genre):
 		genres = genre.split(",")
 		pat = fr"\b(?:{'|'.join(genres)})\b"
-		genres = re.findall(pat, self.text, re.IGNORECASE)
+		genres = re.findall(pat, text, re.IGNORECASE)
 		
 		return genres
 			
 	def run(self, **kwargs):
-		kwargs['genres'] = self.get_genre()
+		kwargs['genres'] = self.get_genre(**kwargs)
 		return kwargs

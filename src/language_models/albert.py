@@ -11,8 +11,8 @@ import torch
 from tqdm import tqdm, trange
 from transformers import AlbertConfig, AlbertForTokenClassification, AutoTokenizer, AlbertForQuestionAnswering
 
-from .config import *
-from .logging_handler import logger
+from src.language_models.config import *
+from src.logging_handler import logger
 
 
 class AlbertQA:
