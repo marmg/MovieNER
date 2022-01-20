@@ -141,7 +141,7 @@ class Detector:
 
         kwargs = self.get_entities(**kwargs)
         for extractor in self.extractors:
-            kwargs = extractor.run(**kwarg)
+            kwargs = extractor.run(**kwargs)
         kwargs, df = self.checker.run(**kwargs)
 
         if len(df) == 1:
