@@ -1,5 +1,6 @@
 from src.language_models import AlbertQA
-from .endpoint_config import ASSETS_PATH, MODELS_PATH
+from src.endpoint_config import ASSETS_PATH, MODELS_PATH
+from src.extractors.base_extractor import BaseExtractor
 
 import string
 import re

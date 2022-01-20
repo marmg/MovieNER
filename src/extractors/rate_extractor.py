@@ -1,6 +1,8 @@
 import re
 import string
 
+from src.extractors.base_extractor import BaseExtractor
+
 
 # Regex
 rates_l = [

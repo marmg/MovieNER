@@ -1,5 +1,7 @@
 import re
 
+from src.extractors.base_extractor import BaseExtractor
+
 
 trailers_l = [
    "trailer",

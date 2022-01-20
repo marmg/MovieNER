@@ -1,5 +1,7 @@
 import re
 
+from src.extractors.base_extractor import BaseExtractor
+
 
 class YearExtractor(BaseExtractor):
 	def get_year(self, **kwargs):

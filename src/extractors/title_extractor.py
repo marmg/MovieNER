@@ -1,5 +1,7 @@
 import re
 
+from src.extractors.base_extractor import BaseExtractor
+
 
 class TitleExtractor(BaseExtractor):		
 	def get_titles(self, **kwargs):
