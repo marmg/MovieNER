@@ -22,6 +22,6 @@ class TrailerExtractor(BaseExtractor):
 		return trailers
 
 	def run(self, **kwargs):
-		kwargs['trailers'] = self.get_awards(**kwargs)
+		kwargs['trailers'] = self.get_trailers(**kwargs)
 		
 		return kwargs
