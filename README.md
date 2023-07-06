@@ -156,9 +156,9 @@ This way all the person labels detected are assigned to one of: actor, director 
 If for some reason there is an actor or director in the text that has not been recognized with this method there is still another chance for it. The code tries to match the movie the text speaks about with a database of movies. If it is matched, the title, the genres, the actors and the directors are searched in the text.
 
 Even when it is a powerful and robust method, it has some disadvantages: 
-- Slow method: In the worst case, it is needed to run a *Spacy* model, an *Albert* model for *NER* and 2 *Albert* models for *QA*.
-- *NER* problems: In case the name is not recognized by any of the models it will be not recognized. This may be due to case problems. (This models are trained with names in uppercase, so names in lowercase tends to not be recognized. To solve this some libraries try to correct the case, but they are too slow. Another option is to train the models with names in lowercase.
-- Spell errors: If the name has any spell error it is not going to be matched in this approach. To solve this is not too complex, for example a fuzzy search could be done with, for instance, the Levenshtein distance in order to match the names.
+- Slow method: In the worst case, it is needed to run a *Spacy* model, an *Albert* model for *NER*, and 2 *Albert* models for *QA*.
+- *NER* problems: In case the name is not recognized by any of the models it will be not recognized. This may be due to case problems. (These models are trained with names in uppercase, so names in lowercase tend to not be recognized. To solve this some libraries try to correct the case, but they are too slow. Another option is to train the models with names in lowercase.
+- Spell errors: If the name has any spell error it is not going to be matched in this approach. To solve this is not too complex, for example, a fuzzy search could be done with, for instance, the Levenshtein distance in order to match the names.
 
 
 ### Next Steps and Improvements
